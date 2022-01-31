@@ -1,13 +1,23 @@
-import { createContext, ReactNode } from "react";
+import { createContext, ReactNode, useState } from "react";
+import Router from 'next/router';
 import { api } from "../services/api";
+
+import { setCookie } from 'nookies';
 
 type SingInCredentials = {
     email: string;
     password: string;
 }
 
+type User = {
+    email: string;
+    permissions: string[];
+    roles: string[];
+}
+
 type AuthContextData = {
     signIn(credentials: SingInCredentials): Promise<void>;
+    user: User;
     isAuthenticated: boolean;
 };
 
@@ -18,7 +28,8 @@ type AuthProviderProps = {
 export const AuthContext = createContext({} as AuthContextData)
 
 export function AuthProvider({ children }: AuthProviderProps) {
-    const isAuthenticated = false;
+    const [user, setUser] = useState<User>();
+    const isAuthenticated = !!user;
 
     async function signIn({ email, password }: SingInCredentials) {
         try {
@@ -26,7 +37,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 email, password,
             })
 
-            console.log(response.data)
+            const { token, refreshToken, permissions, roles } = response.data;
+
+            setCookie(undefined, 'nextauth.token', token, {
+                maxAge: 60 * 60 * 24 * 30, //30days
+                path: '/'
+            })
+
+            setCookie(undefined, 'nextauth.refreshToken', refreshToken, {
+                maxAge: 60 * 60 * 24 * 30, //30days
+                path: '/'
+            })
+
+            setUser({
+                email,
+                permissions,
+                roles,
+            })
+            Router.push('/dashboard')
         }
         catch (err) {
             console.log(err)
@@ -34,6 +62,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     return (
-        <AuthContext.Provider value={{ signIn, isAuthenticated }}>{children}</AuthContext.Provider>
+        <AuthContext.Provider value={{ signIn, isAuthenticated, user }}>{children}</AuthContext.Provider>
     )
 }
