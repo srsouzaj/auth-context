@@ -1,10 +1,8 @@
 //import styles from "../styles/Home.module.scss"
 
-import { GetServerSideProps } from "next";
 import { useState, FormEvent, useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 
-import { parseCookies } from 'nookies';
 import withSSRGuest from "../utils/withSSRGuest";
 
 export default function Home() {
@@ -36,7 +34,7 @@ export const getServerSideProps = withSSRGuest(async (ctx) => {
 
   return {
     props: {
-      
+
     }
   }
 }
