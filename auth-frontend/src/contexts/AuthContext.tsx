@@ -27,7 +27,7 @@ type AuthProviderProps = {
 
 export const AuthContext = createContext({} as AuthContextData)
 
-export function SignOut(){
+export function SignOut() {
     destroyCookie(undefined, 'nextauth.token')
     destroyCookie(undefined, 'nextauth.refreshToken')
     Router.push('/')
@@ -49,8 +49,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
             })
                 .catch(error => {
                     SignOut()
-                   
-                    
+
+
                 })
         }
     }, [])
