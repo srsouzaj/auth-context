@@ -48,7 +48,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
             switch (message.data) {
                 case 'signOut':
                     signOut();
+                    authChannel.close();
                     break;
+
+                // case "signIn":
+                //     window.location.replace("http://localhost:3000/dashboard");
+                //     break;
                 default:
                     break;
             }
@@ -98,6 +103,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
             api.defaults.headers['Authorization'] = `Bearer ${token}`;
             Router.push('/dashboard')
+            //authChannel.postMessage("signIn");
 
 
         }
